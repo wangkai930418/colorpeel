@@ -11,12 +11,19 @@ def main():
 	parser.add_argument("--inf_steps", type=int, default=100)
 	parser.add_argument("--seeds", type=int, default=42)
 	parser.add_argument("--scale", type=float, default=6.0)
-	parser.add_argument("--samples", type=int, default=20)
+	parser.add_argument("--samples", type=int, default=3)
 
 	args = parser.parse_args()
 	
 	prompts = [
-		"a photo of <s1*> shape in <c1*> color"
+		"a photo of <s1*> shape in <c1*> color",
+		"a photo of <s1*> shape in <c2*> color",
+		"a photo of <s1*> shape in <c3*> color",
+		"a photo of <s1*> shape in <c4*> color",
+		"a photo of <s2*> shape in <c1*> color",
+		"a photo of <s2*> shape in <c2*> color",
+		"a photo of <s2*> shape in <c3*> color",
+		"a photo of <s2*> shape in <c4*> color",
 		]
 
 	model_path = f'models/{args.exp}/'
@@ -37,8 +44,10 @@ def main():
 	
 	pipe = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16).to("cuda")
 	pipe.unet.load_attn_procs(f"{model_id}", weight_name="pytorch_custom_diffusion_weights.bin")
+
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<s1*>.bin")
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<s2*>.bin")
+	
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<c1*>.bin")
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<c2*>.bin")
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<c3*>.bin")
