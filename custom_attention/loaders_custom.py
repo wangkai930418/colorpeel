@@ -21,11 +21,13 @@ import torch
 import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
 
+from custom_attention.attention_processor_custom import CustomDiffusionAttnProcessor, CustomDiffusionXFormersAttnProcessor
+
 from diffusers.models.attention_processor import (
     AttnAddedKVProcessor,
     AttnAddedKVProcessor2_0,
-    CustomDiffusionAttnProcessor,
-    CustomDiffusionXFormersAttnProcessor,
+    # CustomDiffusionAttnProcessor,
+    # CustomDiffusionXFormersAttnProcessor,
     LoRAAttnAddedKVProcessor,
     LoRAAttnProcessor,
     LoRAAttnProcessor2_0,
@@ -251,7 +253,10 @@ class UNet2DConditionLoadersMixin:
         attn_processors = {}
 
         is_lora = all("lora" in k for k in state_dict.keys())
+
+        ### NOTE: hard coding
         is_custom_diffusion = any("custom_diffusion" in k for k in state_dict.keys())
+        # is_custom_diffusion = True
 
         if is_lora:
             is_new_lora_format = all(
@@ -390,7 +395,8 @@ class UNet2DConditionLoadersMixin:
             for (_, x) in self.attn_processors.items()
         )
         ### NOTE: hard code to make sure save the checkpoint.
-        is_custom_diffusion=True
+        # is_custom_diffusion=True
+
         if is_custom_diffusion:
             model_to_save = AttnProcsLayers(
                 {
