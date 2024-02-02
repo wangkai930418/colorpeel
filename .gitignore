@@ -1,0 +1,6 @@
+.vscode
+concept_json
+data
+models
+*.sh
+*__pycache__
