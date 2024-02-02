@@ -16,7 +16,7 @@ def main():
 	args = parser.parse_args()
 	
 	prompts = [
-		"a photo of <s1*> in <c3*>"
+		"a photo of <s1*> shape in <c1*> color"
 		]
 
 	model_path = f'models/{args.exp}/'
