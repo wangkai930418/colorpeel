@@ -40,8 +40,9 @@ from custom_attention.unet_2d_condition_custom import UNet2DConditionModel
 from custom_attention.loaders_custom import AttnProcsLayers
 # from diffusers.models.attention_processor import CustomDiffusionAttnProcessor, CustomDiffusionXFormersAttnProcessor
 from custom_attention.attention_processor_custom import CustomDiffusionAttnProcessor, CustomDiffusionXFormersAttnProcessor
+from custom_attention.modeling_clip import CLIPTextModel
 
-from colornet_utils import create_image_with_shapes, _compute_cosine
+from colornet_utils import create_image_with_shapes, _compute_cosine, ColorNet, optim_init_colornet
 
 from diffusers.optimization import get_scheduler
 from diffusers.utils import check_min_version, is_wandb_available
@@ -347,11 +348,13 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--modifier_token",
         type=str,
-        default=None,
+        default="<s1*>+<s2*>+<s3*>+<s4*>+<c*>",
         help="A token to use as a modifier for the concept.",
     )
     parser.add_argument(
-        "--initializer_token", type=str, default=None, help="A token to use as initializer word."
+        "--initializer_token", type=str, 
+        default="circle+square+triangle+hexagon+red", 
+        help="A token to use as initializer word."
     )
     parser.add_argument("--hflip", action="store_true", help="Apply horizontal flip data augmentation.")
     parser.add_argument(
@@ -437,11 +440,13 @@ def main(args):
     tokenizer = AutoTokenizer.from_pretrained(args.pretrained_model_name_or_path, subfolder="tokenizer", revision=args.revision, use_fast=False,)
 
     # import correct text encoder class
-    text_encoder_cls = import_model_class_from_model_name_or_path(args.pretrained_model_name_or_path, args.revision)
+    # text_encoder_cls = import_model_class_from_model_name_or_path(args.pretrained_model_name_or_path, args.revision)
 
     # Load scheduler and models
     noise_scheduler = DDPMScheduler.from_pretrained(args.pretrained_model_name_or_path, subfolder="scheduler")
-    text_encoder = text_encoder_cls.from_pretrained(args.pretrained_model_name_or_path, subfolder="text_encoder", revision=args.revision)
+
+    text_encoder = CLIPTextModel.from_pretrained(args.pretrained_model_name_or_path, subfolder="text_encoder")
+
     vae = AutoencoderKL.from_pretrained(args.pretrained_model_name_or_path, subfolder="vae", revision=args.revision)
     unet = UNet2DConditionModel.from_pretrained(args.pretrained_model_name_or_path, subfolder="unet", revision=args.revision)
 
@@ -466,10 +471,8 @@ def main(args):
                     " `modifier_token` that is not already in the tokenizer."
                 )
 
-            # Convert the initializer_token, placeholder_token to ids
-            # token_ids = tokenizer.encode([initializer_token], add_special_tokens=False)
-            
-            token_ids = [int(tokenizer(initializer_token, truncation=True, max_length=tokenizer.model_max_length, return_tensors="pt",).input_ids[:,1])]
+            token_ids = [int(tokenizer(initializer_token, truncation=True, \
+                                       max_length=tokenizer.model_max_length, return_tensors="pt",).input_ids[:,1])]
 
             # Check if initializer_token is a single token or a sequence of tokens
             if len(token_ids) > 1:
@@ -495,6 +498,17 @@ def main(args):
             text_encoder.text_model.embeddings.position_embedding.parameters(),
         )
         freeze_params(params_to_freeze)
+
+        ### NOTE: for color encoder. hard coding for now
+        color_initial_id = tokenizer('red', add_special_tokens=False,return_tensors="pt").input_ids
+        color_x0 = token_embeds[49400]
+        color_x1 = token_embeds[49401]
+        color_init_embed = token_embeds[color_initial_id]
+
+        color_encoder = ColorNet(hidden_size=1568)
+        color_encoder = optim_init_colornet(color_encoder, color_x0, color_x1, y=color_init_embed, step=101)
+        color_token_id = tokenizer.convert_tokens_to_ids("<c*>")
+
     ########################################################
     ########################################################
 
@@ -632,9 +646,9 @@ def main(args):
     else:
         optimizer_class = torch.optim.AdamW
 
-    # Optimizer creation
+    ### NOTE: Optimizer creation include the color encoder colornet 
     optimizer = optimizer_class(
-        itertools.chain(text_encoder.get_input_embeddings().parameters(), custom_diffusion_layers.parameters())
+        itertools.chain(text_encoder.get_input_embeddings().parameters(), custom_diffusion_layers.parameters(), color_encoder.parameters())
         if args.modifier_token is not None
         else custom_diffusion_layers.parameters(),
         lr=args.learning_rate,
@@ -659,12 +673,12 @@ def main(args):
 
     # Prepare everything with our `accelerator`.
     if args.modifier_token is not None:
-        custom_diffusion_layers, text_encoder, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
-            custom_diffusion_layers, text_encoder, optimizer, train_dataloader, lr_scheduler
+        custom_diffusion_layers, text_encoder, optimizer, train_dataloader, lr_scheduler, color_encoder = accelerator.prepare(
+            custom_diffusion_layers, text_encoder, optimizer, train_dataloader, lr_scheduler, color_encoder
         )
     else:
-        custom_diffusion_layers, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
-            custom_diffusion_layers, optimizer, train_dataloader, lr_scheduler
+        custom_diffusion_layers, optimizer, train_dataloader, lr_scheduler, color_encoder = accelerator.prepare(
+            custom_diffusion_layers, optimizer, train_dataloader, lr_scheduler, color_encoder
         )
 
     # We need to recalculate our total training steps as the size of the training dataloader may have changed.
@@ -703,12 +717,17 @@ def main(args):
         unet.train()
         if args.modifier_token is not None:
             text_encoder.train()
+        color_encoder.train()
 
         for step, batch in enumerate(train_dataloader):
             with accelerator.accumulate(unet), accelerator.accumulate(text_encoder):
                 # Convert images to latent space
                 latents = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist.sample()
                 latents = latents * vae.config.scaling_factor
+                input_ids = batch["input_ids"]
+                ### NOTE: color embedding
+                color_fill_embed = batch["color_fill_embed"]
+                color_embed = color_encoder(color_fill_embed)
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
@@ -722,8 +741,15 @@ def main(args):
                 # (this is the forward diffusion process)
                 noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
 
-                # Get the text embedding for conditioning
-                encoder_hidden_states = text_encoder(batch["input_ids"])[0]
+                ### NOTE: OLD: Get the text embedding for conditioning
+                # encoder_hidden_states = text_encoder(input_ids)[0]
+
+                ### NOTE: NEW: get the text embedding
+                inputs_embeds = text_encoder.get_input_embeddings()(input_ids.to(accelerator.device))
+                color_token_id_idxs = [i.index(color_token_id) for i in input_ids.cpu().tolist()]
+                for i, color_token_id_idx in enumerate(color_token_id_idxs):
+                    inputs_embeds[i, color_token_id_idx, :] = color_embed[i]
+                encoder_hidden_states = text_encoder(inputs_embeds=inputs_embeds)[0].to(dtype=weight_dtype)
                 
                 # Predict the noise residual
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample

@@ -158,6 +158,7 @@ def collate_fn(examples, with_prior_preservation):
     input_ids = [example["instance_prompt_ids"] for example in examples]
     pixel_values = [example["instance_images"] for example in examples]
     mask = [example["mask"] for example in examples]
+    color_fill_embed = [example["color_fill_embed"] for example in examples]
     # Concat class and instance examples for prior preservation.
     # We do this to avoid doing two forward passes.
     if with_prior_preservation:
@@ -170,8 +171,10 @@ def collate_fn(examples, with_prior_preservation):
     mask = torch.stack(mask)
     pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
     mask = mask.to(memory_format=torch.contiguous_format).float()
+    color_fill_embed = torch.cat(color_fill_embed, dim=0)
 
-    batch = {"input_ids": input_ids, "pixel_values": pixel_values, "mask": mask.unsqueeze(1)}
+    batch = {"input_ids": input_ids, "pixel_values": pixel_values, \
+             "mask": mask.unsqueeze(1), "color_fill_embed": color_fill_embed}
     return batch
 
 
@@ -294,7 +297,9 @@ class CustomDiffusionDataset(Dataset):
         
         template_ = random.choices(color_templates, k=1)[0]
         instance_prompt_idx = template_.format(color_token="<c*>", shape_token=shape_token)
-                               
+        
+        example["color_fill_embed"] = color_fill_embed
+        
         example["instance_prompt_ids"] = self.tokenizer(
             # random.choice(instance_prompt),
             instance_prompt_idx,

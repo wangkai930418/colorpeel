@@ -267,11 +267,11 @@ def create_image_with_shapes(circle_diameter = 256, fill_color = (150, 0, 0), sh
     return image
 
 
-def optim_init_colornet(color_encoder, x0, x1, y ):
+def optim_init_colornet(color_encoder, x0, x1, y, step=500):
     optim=torch.optim.Adam(color_encoder.parameters())
     color_encoder, x0, x1, y = color_encoder.cuda(), x0.cuda(), x1.cuda(), y.cuda() 
-    for loop_num in range(500):
-        y_ = color_encoder(torch.cat([x0,x1], dim=0))
+    for loop_num in range(step):
+        y_ = color_encoder(torch.cat([x0.unsqueeze(0),x1.unsqueeze(0)], dim=0))
         # print(y.shape)
         loss = ((y_ - y)**2).sum()
         if loop_num % 100 ==0:
