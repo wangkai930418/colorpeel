@@ -389,7 +389,6 @@ def parse_args(input_args=None):
 
     
 
-
 def main(args):
     logging_dir = Path(args.output_dir, args.logging_dir)
     accelerator_project_config = ProjectConfiguration(total_limit=args.checkpoints_total_limit)
@@ -622,6 +621,8 @@ def main(args):
         num_class_images=args.num_class_images,
         hflip=args.hflip,
         aug=not args.noaug,
+        x0=color_x0,
+        x1=color_x1,
     )
 
     train_dataloader = torch.utils.data.DataLoader(
@@ -706,12 +707,8 @@ def main(args):
     progress_bar = tqdm(range(global_step, args.max_train_steps), disable=not accelerator.is_local_main_process)
     progress_bar.set_description("Steps")
     
-    # running_loss = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
-    # attn_maps = {}
-    # updated_attn_maps = {}
     modifier_ids = torch.tensor(modifier_token_id).to(accelerator.device)
 
-    # os.mkdir(f'{args.output_dir}/attn_maps/')
     os.makedirs(f'{args.output_dir}/attn_maps/', exist_ok=True)
     for epoch in range(first_epoch, args.num_train_epochs):
         unet.train()
@@ -759,10 +756,7 @@ def main(args):
                 for name, module in unet.named_modules():
                     module_name = type(module).__name__
                     if (module_name == "Attention") and ('attn2' in name):
-                    # if module_name == "CrossAttention" and 'attn2' in name:
                         curr = module.attn_probs
-                        # curr = module.attention_probs
-                        ### NOTE: here to learn why
 
                         if curr.shape[-1] == 77 and curr.shape[-2] == (res**2):
                             all_attentions.append(curr)
@@ -852,7 +846,6 @@ def main(args):
                         logger.info(f"Saved state to {save_path}")
 
             logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
-            # logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0], "AttnLoss": attn_loss.item()}
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
@@ -907,7 +900,8 @@ def main(args):
         unet = unet.to(torch.float32)
         unet.save_attn_procs(args.output_dir) ### NOTE: now it changes so the save is also different
         save_new_embed(text_encoder, modifier_token_id, accelerator, args, args.output_dir)
-
+        ### NOTE: save the color encoder
+        torch.save(color_encoder.cpu().state_dict(), f"{args.output_dir}/color_encoder.pth")
         # Final inference
         # Load previous pipeline
         pipeline = DiffusionPipeline.from_pretrained(

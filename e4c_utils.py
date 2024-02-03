@@ -193,6 +193,8 @@ class CustomDiffusionDataset(Dataset):
         hflip=False,
         aug=False,
         shape_size=256,
+        x0=None,
+        x1=None,
     ):
         self.shape_size=shape_size
         self.size = size
@@ -241,6 +243,9 @@ class CustomDiffusionDataset(Dataset):
             ]
         )
 
+        self.start_color_embed=x0
+        self.end_color_embed=x1
+
     def __len__(self):
         return self._length
 
@@ -270,8 +275,6 @@ class CustomDiffusionDataset(Dataset):
         example = {}
         ### NOTE: automatical generation
         start_color, end_color = torch.tensor([200,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
-        ### NOTE: hard coding
-        self.start_color_embed, self.end_color_embed = torch.zeros(1,768), torch.ones(1,768)
 
         color_lambda = torch.rand(1)
         color_fill = (start_color * (1-color_lambda) + end_color * color_lambda).to(torch.int)
