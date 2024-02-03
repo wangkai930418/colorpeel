@@ -148,7 +148,7 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="models/colorpeel_exp11_3d_2s4c_w2c_cos",
+        default="models/colorpeel_e4c",
         help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument("--seed", type=int, default=42, help="A seed for reproducible training.")
