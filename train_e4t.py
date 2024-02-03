@@ -41,6 +41,8 @@ from custom_attention.loaders_custom import AttnProcsLayers
 # from diffusers.models.attention_processor import CustomDiffusionAttnProcessor, CustomDiffusionXFormersAttnProcessor
 from custom_attention.attention_processor_custom import CustomDiffusionAttnProcessor, CustomDiffusionXFormersAttnProcessor
 
+from colornet_utils import create_image_with_shapes
+
 from diffusers.optimization import get_scheduler
 from diffusers.utils import check_min_version, is_wandb_available
 from diffusers.utils.import_utils import is_xformers_available
@@ -52,6 +54,22 @@ import wandb
 # check_min_version("0.17.0.dev0")
 
 logger = get_logger(__name__)
+
+shape_id_dict = {'circle':0, 'square':1, 'triangle':2, 'hexagon':3}
+shape_id_dict_reverse = {v: k for k, v in shape_id_dict.items()}
+
+shape_token_dict = {'circle':'<s1*>', 'square':'<s2*>', 'triangle':'<s3*>', 'hexagon':'<s4*>'}
+shape_token_dict_reverse = {v: k for k, v in shape_id_dict.items()}
+
+color_id_dict = {'red':0, 'green':1, 'blue':2, 'yellow':3}
+color_id_dict_reverse = {0:(255,0,0), 1:(0,255,0), 2:(0,0,255), 3:(255,255,0)}
+
+color_templates = [
+    "a photo of {shape_token} in {color_token}",
+    "a photo of {shape_token} shape in {color_token} color",
+    "a photo of {shape_token} filled with {color_token}",
+    "a photo of {shape_token} {color_token}",
+]
 
 
 def freeze_params(params):
@@ -189,30 +207,9 @@ def collate_fn(examples, with_prior_preservation):
     return batch
 
 
-class PromptDataset(Dataset):
-    "A simple dataset to prepare the prompts to generate class images on multiple GPUs."
 
-    def __init__(self, prompt, num_samples):
-        self.prompt = prompt
-        self.num_samples = num_samples
-
-    def __len__(self):
-        return self.num_samples
-
-    def __getitem__(self, index):
-        example = {}
-        example["prompt"] = self.prompt
-        example["index"] = index
-
-        # print(example["prompt"])
-        return example
-
+### NOTE: modify this class for color encoder
 class CustomDiffusionDataset(Dataset):
-    """
-    A dataset to prepare the instance and class images with the prompts for fine-tuning the model.
-    It pre-processes the images and the tokenizes prompts.
-    """
-
     def __init__(
         self,
         concepts_list,
@@ -224,7 +221,9 @@ class CustomDiffusionDataset(Dataset):
         num_class_images=200,
         hflip=False,
         aug=False,
+        shape_size=256,
     ):
+        self.shape_size=shape_size
         self.size = size
         self.mask_size = mask_size
         self.center_crop = center_crop
@@ -298,8 +297,23 @@ class CustomDiffusionDataset(Dataset):
 
     def __getitem__(self, index):
         example = {}
-        instance_image, instance_prompt = self.instance_images_path[index % self.num_instance_images]
-        instance_image = Image.open(instance_image)
+        ### NOTE: automatical generation
+        start_color, end_color = torch.tensor([200,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
+        ### NOTE: hard coding
+        self.start_color_embed, self.end_color_embed = torch.zeros(1,768), torch.ones(1,768)
+
+        color_lambda = torch.rand(1)
+        color_fill = (start_color * (1-color_lambda) + end_color * color_lambda).to(torch.int)
+        color_fill_embed = (self.start_color_embed * (1-color_lambda) + self.end_color_embed * color_lambda)
+
+        shape_label = torch.randint(0, 4, (1,))
+        shape = shape_id_dict_reverse[shape_label.item()]
+        shape_token=shape_token_dict[shape]
+
+        color_fill_tuple = tuple(color_fill.tolist())
+
+        instance_image = create_image_with_shapes(circle_diameter=self.shape_size, \
+                                          fill_color=color_fill_tuple, shape=shape)
         if not instance_image.mode == "RGB":
             instance_image = instance_image.convert("RGB")
 
@@ -309,9 +323,13 @@ class CustomDiffusionDataset(Dataset):
 
         example["instance_images"] = torch.from_numpy(instance_image).permute(2, 0, 1)
         example["mask"] = torch.from_numpy(mask)
-
+        
+        template_ = random.choices(color_templates, k=1)[0]
+        instance_prompt_idx = template_.format(color_token="<c*>", shape_token=shape_token)
+                               
         example["instance_prompt_ids"] = self.tokenizer(
-            random.choice(instance_prompt),
+            # random.choice(instance_prompt),
+            instance_prompt_idx,
             truncation=True,
             padding="max_length",
             max_length=self.tokenizer.model_max_length,
@@ -326,8 +344,8 @@ def save_new_embed(text_encoder, modifier_token_id, accelerator, args, output_di
     logger.info("Saving embeddings")
     learned_embeds = accelerator.unwrap_model(text_encoder).get_input_embeddings().weight
 
-    q_emb = []
-    lc_emb = []
+    # q_emb = []
+    # lc_emb = []
 
     for x, y in zip(modifier_token_id, args.modifier_token):
         learned_embeds_dict = {}
@@ -973,17 +991,7 @@ def main(args):
         collate_fn=lambda examples: collate_fn(examples, args.with_prior_preservation),
         num_workers=args.dataloader_num_workers,
     )
-
-    # text_encoder.to(accelerate.device, dtype=weight_dtype)
-    text_ids_src = train_dataloader.dataset[0]['instance_prompt_ids']
-    text_ids_src = text_ids_src.to(device=accelerator.device)
-
-    # with torch.inference_mode():
-    #     source_embeddings = text_encoder(text_ids_src)[0].float()
-
-    # n_hiper = 5
-    # src_embeddings = source_embeddings[:,:-n_hiper].detach().clone()
-    # hiper_embeddings = source_embeddings[:,-n_hiper:].detach().clone().requires_grad_(True)
+    text_encoder.to(accelerator.device, dtype=weight_dtype)
 
     # Use 8-bit Adam for lower memory usage or to fine-tune the model in 16GB GPUs
     if args.use_8bit_adam:

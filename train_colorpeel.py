@@ -987,16 +987,16 @@ def main(args):
         num_workers=args.dataloader_num_workers,
     )
 
-    # text_encoder.to(accelerate.device, dtype=weight_dtype)
-    text_ids_src = train_dataloader.dataset[0]['instance_prompt_ids']
-    text_ids_src = text_ids_src.to(device=accelerator.device)
+    text_encoder.to(accelerator.device, dtype=weight_dtype)
+    # text_ids_src = train_dataloader.dataset[0]['instance_prompt_ids']
+    # text_ids_src = text_ids_src.to(device=accelerator.device)
 
-    with torch.inference_mode():
-        source_embeddings = text_encoder(text_ids_src)[0].float()
+    # with torch.inference_mode():
+    #     source_embeddings = text_encoder(text_ids_src)[0].float()
 
-    n_hiper = 5
-    src_embeddings = source_embeddings[:,:-n_hiper].detach().clone()
-    hiper_embeddings = source_embeddings[:,-n_hiper:].detach().clone().requires_grad_(True)
+    # n_hiper = 5
+    # src_embeddings = source_embeddings[:,:-n_hiper].detach().clone()
+    # hiper_embeddings = source_embeddings[:,-n_hiper:].detach().clone().requires_grad_(True)
 
     # Use 8-bit Adam for lower memory usage or to fine-tune the model in 16GB GPUs
     if args.use_8bit_adam:

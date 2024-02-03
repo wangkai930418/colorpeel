@@ -57,14 +57,8 @@ class E4TDataset(Dataset):
         return len(self.list)
 
     def __getitem__(self, idx):
-        # image = self.dataset[idx]
-        # if self.from_datasets:
-        #     image = image["image"]
-        # else:
-        #     image = Image.open(image)
+
         start_color, end_color = torch.tensor([200,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
-        # start_color, end_color = torch.tensor([128,100,128], dtype=torch.float32), torch.tensor([128,150,128], dtype=torch.float32)
-        # start_color_embed, end_color_embed = torch.zeros(1,768), torch.ones(1,768)
 
         color_lambda = torch.rand(1)
         color_fill = (start_color * (1-color_lambda) + end_color * color_lambda).to(torch.int)
@@ -162,7 +156,6 @@ class E4TDataset_RGB(Dataset):
 
         shape_label = torch.randint(0, 4, (1,))
         shape = shape_id_dict_reverse[shape_label.item()]
-
 
         image_, image_mask = create_image_with_shapes_fg_mask(circle_diameter=self.shape_size, \
                                           fill_color=color_fill, shape=shape)
