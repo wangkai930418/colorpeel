@@ -17,6 +17,13 @@ color_id_dict = {'red':0, 'green':1, 'blue':2, 'yellow':3}
 color_id_dict_reverse = {0:(255,0,0), 1:(0,255,0), 2:(0,0,255), 3:(255,255,0)}
 # color_id_dict_reverse = {v: k for k, v in color_id_dict.items()}
 
+def _compute_cosine(attention_maps: torch.Tensor,indices_to_alter: List[int],):
+    x_attn = attention_maps[:,:,indices_to_alter].view(-1,len(indices_to_alter)).t()
+    cos_mask = torch.tril(torch.ones((len(indices_to_alter),len(indices_to_alter))),diagonal=-1).bool()
+    cos_sim = F.cosine_similarity(x_attn[:,:,None], x_attn.t()[None,:,:])
+    cos_dist = 1 - cos_sim[cos_mask].mean()
+
+    return cos_dist
 
 def _compute_cosine_seg(attention_maps: torch.Tensor,indices_to_alter: List[int], seg_maps=None):
     x_attn = attention_maps[:,:,indices_to_alter].view(-1,len(indices_to_alter)).t()
@@ -36,12 +43,12 @@ def _compute_IoU_loss(attention_maps: torch.Tensor,indices_to_alter: List[int], 
     return 1 - sum(loss_list)/float(length)
 
 
-def _compute_cosine(attention_maps: torch.Tensor,indices_to_alter: List[int],):
-    x_attn = attention_maps[:,:,indices_to_alter].view(-1,len(indices_to_alter)).t()
-    cos_mask = torch.tril(torch.ones((len(indices_to_alter),len(indices_to_alter))),diagonal=-1).bool()
-    cos_sim = F.cosine_similarity(x_attn[:,:,None], x_attn.t()[None,:,:])
-    cos_dist = cos_sim[cos_mask].mean()
-    return cos_dist
+# def _compute_cosine(attention_maps: torch.Tensor,indices_to_alter: List[int],):
+#     x_attn = attention_maps[:,:,indices_to_alter].view(-1,len(indices_to_alter)).t()
+#     cos_mask = torch.tril(torch.ones((len(indices_to_alter),len(indices_to_alter))),diagonal=-1).bool()
+#     cos_sim = F.cosine_similarity(x_attn[:,:,None], x_attn.t()[None,:,:])
+#     cos_dist = cos_sim[cos_mask].mean()
+#     return cos_dist
 
 class E4TDataset(Dataset):
     def __init__(
