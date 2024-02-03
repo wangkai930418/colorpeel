@@ -1,5 +1,8 @@
 import torch
-from diffusers import DiffusionPipeline
+from diffusers import DiffusionPipeline 
+### NOTE: consider to change into stable diffusion pipeline to avoid safety checker
+from diffusers import StableDiffusionPipeline 
+
 import os
 from datetime import datetime
 import argparse
@@ -43,6 +46,9 @@ def main():
   		os.makedirs(f'{out_path}/{LOG_DIR}')
 	
 	pipe = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16).to("cuda")
+	### NOTE: disable the safety checker
+	pipe.safety_checker = None
+
 	pipe.unet.load_attn_procs(f"{model_id}", weight_name="pytorch_custom_diffusion_weights.bin")
 
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<s1*>.bin")
