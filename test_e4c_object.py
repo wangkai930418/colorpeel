@@ -21,10 +21,10 @@ def main():
 	args = parser.parse_args()
 	
 	prompts = [
-		"a photo of <s1*> shape in <c*> color",
-		"a photo of <s2*> shape in <c*> color",
-		"a photo of <s3*> shape in <c*> color",
-		"a photo of <s4*> shape in <c*> color",
+		"a photo of {object_placeholder} in <c*> color",
+		# "a photo of <s2*> shape in <c*> color",
+		# "a photo of <s3*> shape in <c*> color",
+		# "a photo of <s4*> shape in <c*> color",
 		# "a photo of <s1*> shape in <c1*> color",
 		# "a photo of <s1*> shape in <c2*> color",
 		# "a photo of <s1*> shape in <c3*> color",
@@ -84,8 +84,8 @@ def main():
 	### NOTE: put the new embedding over here.
 	# token_embeds[color_token_id]=torch.zeros(768)
 
-	for prompt in prompts:
-		gen = torch.Generator(device="cuda").manual_seed(args.seeds)
+	for prompt_ in prompts:
+		prompt = prompt_.format(object_placeholder=args.object)
 		# n_samples = args.samples
 		path = f'{out_path}/{LOG_DIR}/{prompt}_{datetime.now()}'
 		os.mkdir(path)
@@ -104,6 +104,8 @@ def main():
 			pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
 			post_color_embed=color_encoder(pre_color_embed)
 			token_embeds[color_token_id]=post_color_embed
+			
+			gen = torch.Generator(device="cuda").manual_seed(args.seeds)
 
 			out = pipe(prompt, num_inference_steps=args.inf_steps, generator=gen, guidance_scale=args.scale,eta=1.0,)
 			out.images[0].save(f"{path}/{prompt}_{color_lambda}.png")
