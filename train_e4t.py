@@ -152,6 +152,7 @@ def parse_args(input_args=None):
         help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument("--seed", type=int, default=42, help="A seed for reproducible training.")
+    parser.add_argument("--pre_step", type=int, default=1000, help="A seed for pre colornet training.")
     parser.add_argument(
         "--resolution",
         type=int,
@@ -509,7 +510,7 @@ def main(args):
         color_encoder = ColorNet(hidden_size=1568)
         color_encoder = optim_init_colornet(color_encoder, color_x0, color_x1, 
                                             y0=color_init_embed_0, y1=color_init_embed_1,
-                                            step=100)
+                                            step=args.pre_step)
         
         color_token_id = tokenizer.convert_tokens_to_ids("<c*>")
 
