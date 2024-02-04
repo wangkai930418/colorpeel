@@ -50,7 +50,8 @@ def main():
 	if not osExist:
   		os.makedirs(f'{out_path}/{LOG_DIR}')
 	
-	pipe = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16).to("cuda")
+	# pipe = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16).to("cuda")
+	pipe = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float32).to("cuda")
 	### NOTE: disable the safety checker
 	pipe.safety_checker = None
 
@@ -70,7 +71,9 @@ def main():
 	color_x0 = token_embeds[49400]
 	color_x1 = token_embeds[49401]
 	color_encoder = ColorNet(hidden_size=1568)
-
+	color_enc_path=f"{model_path}/color_encoder.pth"
+	color_encoder.load_state_dict(torch.load(color_enc_path))
+	color_encoder = color_encoder.cuda()
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c1*>.bin")
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c2*>.bin")
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c3*>.bin")
@@ -82,23 +85,24 @@ def main():
 
 	for prompt in prompts:
 		gen = torch.Generator(device="cuda").manual_seed(args.seeds)
-		n_samples = args.samples
+		# n_samples = args.samples
 		path = f'{out_path}/{LOG_DIR}/{prompt}_{datetime.now()}'
 		os.mkdir(path)
         
-		prompt_ids = tokenizer(
-            prompt,
-            truncation=True,
-            padding="max_length",
-            max_length=tokenizer.model_max_length,
-            return_tensors="pt",
-        ).input_ids
+		# prompt_ids = tokenizer(
+        #     prompt,
+        #     truncation=True,
+        #     padding="max_length",
+        #     max_length=tokenizer.model_max_length,
+        #     return_tensors="pt",
+        # ).input_ids
         
 		# inputs_embeds = text_encoder.get_input_embeddings()(prompt_ids.to("cuda"))
 		# for ind in range(n_samples):
 		for color_lambda in torch.arange(0, 1.1, 0.1):
-			new_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
-			token_embeds[color_token_id]=new_color_embed
+			pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
+			post_color_embed=color_encoder(pre_color_embed)
+			token_embeds[color_token_id]=post_color_embed
 
 			out = pipe(prompt, num_inference_steps=args.inf_steps, generator=gen, guidance_scale=args.scale,eta=1.0,)
 			out.images[0].save(f"{path}/{prompt}_{color_lambda}.png")
