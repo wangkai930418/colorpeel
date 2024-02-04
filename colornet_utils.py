@@ -267,7 +267,26 @@ def create_image_with_shapes(circle_diameter = 256, fill_color = (150, 0, 0), sh
     return image
 
 
-def optim_init_colornet(color_encoder, x0, x1, y, step=500):
+def optim_init_colornet(color_encoder, x0, x1, y0,y1, step=500):
+    optim=torch.optim.Adam(color_encoder.parameters())
+    color_encoder, x0, x1, y0, y1 = color_encoder.cuda(), x0.cuda(), x1.cuda(), y0.cuda(), y1.cuda() 
+    y=torch.cat((y0.squeeze(0), y1.squeeze(0)))
+    for loop_num in range(step):
+        y_ = color_encoder(torch.cat([x0.unsqueeze(0),x1.unsqueeze(0)], dim=0))
+        # print(y.shape)
+        loss = ((y_ - y)**2).sum()
+        if loop_num % 100 ==0:
+            print(loss)
+
+        loss.backward()
+        optim.step()
+        optim.zero_grad()
+
+    return color_encoder
+
+
+
+def optim_init_colornet_single(color_encoder, x0, x1, y, step=500):
     optim=torch.optim.Adam(color_encoder.parameters())
     color_encoder, x0, x1, y = color_encoder.cuda(), x0.cuda(), x1.cuda(), y.cuda() 
     for loop_num in range(step):
@@ -282,7 +301,6 @@ def optim_init_colornet(color_encoder, x0, x1, y, step=500):
         optim.zero_grad()
 
     return color_encoder
-
 
 def create_image_with_shapes_fg_mask(circle_diameter = 256, fill_color = (150, 0, 0), shape='circle'):
     assert shape in ['circle', 'square', 'triangle', 'hexagon']

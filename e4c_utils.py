@@ -273,14 +273,18 @@ class CustomDiffusionDataset(Dataset):
 
     def __getitem__(self, index):
         example = {}
-        ### NOTE: automatical generation
-        start_color, end_color = torch.tensor([200,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
+        ### NOTE: should be automatical generation
+        ### NOTE: now from maroon to red
+        start_color, end_color = torch.tensor([128,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
 
         color_lambda = torch.rand(1)
         color_fill = (start_color * (1-color_lambda) + end_color * color_lambda).to(torch.int)
         color_fill_embed = (self.start_color_embed * (1-color_lambda) + self.end_color_embed * color_lambda)
 
-        shape_label = torch.randint(0, 4, (1,))
+        # shape_label = torch.randint(0, 4, (1,))
+        shape_label = torch.randint(0, 3, (1,))
+        ### NOTE: hexagon is a bit hard to learn so
+        
         shape = shape_id_dict_reverse[shape_label.item()]
         shape_token=shape_token_dict[shape]
 
