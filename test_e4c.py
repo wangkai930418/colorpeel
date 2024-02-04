@@ -2,6 +2,7 @@ import torch
 from diffusers import DiffusionPipeline 
 ### NOTE: consider to change into stable diffusion pipeline to avoid safety checker
 from pipelines.stable_diffusion_pipeline import StableDiffusionPipeline 
+from colornet_utils import create_image_with_shapes, _compute_cosine, ColorNet, optim_init_colornet
 
 import os
 from datetime import datetime
@@ -61,20 +62,46 @@ def main():
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<s4*>.bin")
 	pipe.load_textual_inversion(f"{model_id}", weight_name="<c*>.bin")
 	
+	### NOTE: new code to import the text encoder
+	text_encoder = pipe.text_encoder
+	tokenizer = pipe.tokenizer
+
+	token_embeds = text_encoder.get_input_embeddings().weight.data
+	color_x0 = token_embeds[49400]
+	color_x1 = token_embeds[49401]
+	color_encoder = ColorNet(hidden_size=1568)
+
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c1*>.bin")
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c2*>.bin")
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c3*>.bin")
 	# pipe.load_textual_inversion(f"{model_id}", weight_name="<c4*>.bin")
+	color_token='<c*>'
+	color_token_id = tokenizer.convert_tokens_to_ids(color_token)
+	### NOTE: put the new embedding over here.
+	# token_embeds[color_token_id]=torch.zeros(768)
 
 	for prompt in prompts:
 		gen = torch.Generator(device="cuda").manual_seed(args.seeds)
 		n_samples = args.samples
 		path = f'{out_path}/{LOG_DIR}/{prompt}_{datetime.now()}'
 		os.mkdir(path)
+        
+		prompt_ids = tokenizer(
+            prompt,
+            truncation=True,
+            padding="max_length",
+            max_length=tokenizer.model_max_length,
+            return_tensors="pt",
+        ).input_ids
+        
+		# inputs_embeds = text_encoder.get_input_embeddings()(prompt_ids.to("cuda"))
+		# for ind in range(n_samples):
+		for color_lambda in torch.arange(0, 1.1, 0.1):
+			new_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
+			token_embeds[color_token_id]=new_color_embed
 
-		for ind in range(n_samples):
 			out = pipe(prompt, num_inference_steps=args.inf_steps, generator=gen, guidance_scale=args.scale,eta=1.0,)
-			out.images[0].save(f"{path}/{prompt}_{ind}.png")
+			out.images[0].save(f"{path}/{prompt}_{color_lambda}.png")
 
 if __name__ == "__main__":
     main()
