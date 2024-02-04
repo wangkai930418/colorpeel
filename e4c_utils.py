@@ -275,7 +275,8 @@ class CustomDiffusionDataset(Dataset):
         example = {}
         ### NOTE: should be automatical generation
         ### NOTE: now from maroon to red
-        start_color, end_color = torch.tensor([128,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
+        # start_color, end_color = torch.tensor([128,0,0], dtype=torch.float32), torch.tensor([255,0,0], dtype=torch.float32)
+        start_color, end_color = torch.tensor([128,0,0], dtype=torch.float32), torch.tensor([128,128,0], dtype=torch.float32)
 
         color_lambda = torch.rand(1)
         color_fill = (start_color * (1-color_lambda) + end_color * color_lambda).to(torch.int)

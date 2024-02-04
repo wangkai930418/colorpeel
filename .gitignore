@@ -6,3 +6,7 @@ models
 *__pycache__
 
 output
+
+rename_files.py
+
+make_video.py

@@ -100,7 +100,11 @@ def main():
         
 		# inputs_embeds = text_encoder.get_input_embeddings()(prompt_ids.to("cuda"))
 		# for ind in range(n_samples):
-		for color_lambda in torch.arange(0, 1.1, 0.1):
+		# for color_lambda in torch.arange(0, 1.1, 0.1):
+		# for color_lambda in torch.arange(0.51, 0.61, 0.01):
+
+		for color_lambda in torch.arange(0.51, 0.52, 0.001):
+		# for color_lambda in torch.arange(0.0, 1.01, 0.01):
 			pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
 			post_color_embed=color_encoder(pre_color_embed)
 			token_embeds[color_token_id]=post_color_embed
@@ -108,7 +112,9 @@ def main():
 			gen = torch.Generator(device="cuda").manual_seed(args.seeds)
 
 			out = pipe(prompt, num_inference_steps=args.inf_steps, generator=gen, guidance_scale=args.scale,eta=1.0,)
-			out.images[0].save(f"{path}/{prompt}_{color_lambda}.png")
+
+			out.images[0].save(f"{path}/{prompt}_{int(color_lambda*1000)}.png")
+			# out.images[0].save(f"{path}/{prompt}_{int(color_lambda*100)}.png")
 
 if __name__ == "__main__":
     main()

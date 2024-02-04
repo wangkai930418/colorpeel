@@ -500,7 +500,7 @@ def main(args):
 
         ### NOTE: for color encoder. hard coding for now
         color_initial_id0 = tokenizer('maroon', add_special_tokens=False,return_tensors="pt").input_ids
-        color_initial_id1 = tokenizer('red', add_special_tokens=False,return_tensors="pt").input_ids
+        color_initial_id1 = tokenizer('olive', add_special_tokens=False,return_tensors="pt").input_ids
         color_x0 = token_embeds[49400]
         color_x1 = token_embeds[49401]
         color_init_embed_0 = token_embeds[color_initial_id0]
@@ -509,7 +509,7 @@ def main(args):
         color_encoder = ColorNet(hidden_size=1568)
         color_encoder = optim_init_colornet(color_encoder, color_x0, color_x1, 
                                             y0=color_init_embed_0, y1=color_init_embed_1,
-                                            step=500)
+                                            step=100)
         
         color_token_id = tokenizer.convert_tokens_to_ids("<c*>")
 
