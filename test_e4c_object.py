@@ -103,8 +103,8 @@ def main():
 		# for color_lambda in torch.arange(0, 1.1, 0.1):
 		# for color_lambda in torch.arange(0.51, 0.61, 0.01):
 
-		for color_lambda in torch.arange(0.51, 0.52, 0.001):
-		# for color_lambda in torch.arange(0.0, 1.01, 0.01):
+		# for color_lambda in torch.arange(0.51, 0.52, 0.001):
+		for color_lambda in torch.arange(0.0, 1.01, 0.01):
 			pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
 			post_color_embed=color_encoder(pre_color_embed)
 			token_embeds[color_token_id]=post_color_embed

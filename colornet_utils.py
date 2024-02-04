@@ -266,7 +266,7 @@ def create_image_with_shapes(circle_diameter = 256, fill_color = (150, 0, 0), sh
         draw.polygon(points, fill=fill_color)
     return image
 
-
+### NOTE: this can be improved 
 def optim_init_colornet(color_encoder, x0, x1, y0,y1, step=500):
     optim=torch.optim.Adam(color_encoder.parameters())
     color_encoder, x0, x1, y0, y1 = color_encoder.cuda(), x0.cuda(), x1.cuda(), y0.cuda(), y1.cuda() 
