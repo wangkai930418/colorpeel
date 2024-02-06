@@ -135,7 +135,16 @@ def parse_args(input_args=None):
         action="store_true",
         help="real images as prior.",
     )
-    parser.add_argument("--prior_loss_weight", type=float, default=1.0, help="The weight of prior preservation loss.")
+    ### NOTE: lambda float
+    parser.add_argument("--caa_lambda", 
+                        type=float, 
+                        default=0.2, 
+                        help="The weight of the CAA loss.")
+    
+    parser.add_argument("--prior_loss_weight", 
+                        type=float, 
+                        default=1.0, 
+                        help="The weight of prior preservation loss.")
     parser.add_argument(
         "--num_class_images",
         type=int,
@@ -151,8 +160,12 @@ def parse_args(input_args=None):
         default="models/colorpeel_e4c",
         help="The output directory where the model predictions and checkpoints will be written.",
     )
-    parser.add_argument("--seed", type=int, default=42, help="A seed for reproducible training.")
-    parser.add_argument("--pre_step", type=int, default=1000, help="A seed for pre colornet training.")
+    parser.add_argument("--seed", type=int, default=42, 
+                        help="A seed for reproducible training.")
+    
+    parser.add_argument("--pre_step", type=int, 
+                        default=1000, 
+                        help="A seed for pre colornet training.")
     parser.add_argument(
         "--resolution",
         type=int,
@@ -178,7 +191,11 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--sample_batch_size", type=int, default=4, help="Batch size (per device) for sampling images."
     )
-    parser.add_argument("--num_train_epochs", type=int, default=1)
+
+    parser.add_argument("--num_train_epochs", 
+                        type=int, 
+                        default=1)
+
     parser.add_argument(
         "--max_train_steps",
         type=int,
@@ -194,6 +211,11 @@ def parse_args(input_args=None):
             " checkpoints in case they are better than the last checkpoint, and are also suitable for resuming"
             " training using `--resume_from_checkpoint`."
         ),
+    )
+    parser.add_argument(
+        "--attn_map_steps",
+        type=int,
+        default=50,
     )
     parser.add_argument(
         "--checkpoints_total_limit",
@@ -297,6 +319,8 @@ def parse_args(input_args=None):
             " https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices"
         ),
     )
+
+    ### TODO: have a wandb log
     parser.add_argument(
         "--report_to",
         type=str,
@@ -346,12 +370,14 @@ def parse_args(input_args=None):
             " https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html"
         ),
     )
+
     parser.add_argument(
         "--modifier_token",
         type=str,
         default="<s1*>+<s2*>+<s3*>+<s4*>+<c*>",
         help="A token to use as a modifier for the concept.",
     )
+    ### NOTE: hexagon seems not easy to be learned
     parser.add_argument(
         "--initializer_token", type=str, 
         default="circle+square+triangle+hexagon+red", 
@@ -392,6 +418,8 @@ def parse_args(input_args=None):
 
 def main(args):
     logging_dir = Path(args.output_dir, args.logging_dir)
+
+    ### TODO: include accelerate training
     accelerator_project_config = ProjectConfiguration(total_limit=args.checkpoints_total_limit)
     accelerator = Accelerator(gradient_accumulation_steps=args.gradient_accumulation_steps,\
                               mixed_precision=args.mixed_precision,log_with=args.report_to,\
@@ -438,13 +466,11 @@ def main(args):
 
     # Load the tokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.pretrained_model_name_or_path, subfolder="tokenizer", revision=args.revision, use_fast=False,)
-
     # import correct text encoder class
     # text_encoder_cls = import_model_class_from_model_name_or_path(args.pretrained_model_name_or_path, args.revision)
 
     # Load scheduler and models
     noise_scheduler = DDPMScheduler.from_pretrained(args.pretrained_model_name_or_path, subfolder="scheduler")
-
     text_encoder = CLIPTextModel.from_pretrained(args.pretrained_model_name_or_path, subfolder="text_encoder")
 
     vae = AutoencoderKL.from_pretrained(args.pretrained_model_name_or_path, subfolder="vae", revision=args.revision)
@@ -499,7 +525,7 @@ def main(args):
         )
         freeze_params(params_to_freeze)
 
-        ### NOTE: for color encoder. hard coding for now
+        ### TODO: for color encoder. hard coding for now
         color_initial_id0 = tokenizer('maroon', add_special_tokens=False,return_tensors="pt").input_ids
         color_initial_id1 = tokenizer('olive', add_special_tokens=False,return_tensors="pt").input_ids
         color_x0 = token_embeds[49400]
@@ -612,7 +638,7 @@ def main(args):
         if args.with_prior_preservation:
             args.learning_rate = args.learning_rate * 2.0
 
-    # Dataset and DataLoaders creation:
+    ### TODO: improve the dataset class definition
     train_dataset = CustomDiffusionDataset(
         concepts_list=args.concepts_list,
         tokenizer=tokenizer,
@@ -804,10 +830,15 @@ def main(args):
                 
                 ### NOTE: cosine loss here is our novelty
                 cos = _compute_cosine(attention_maps, indices)
-                pil_imgs, _ = show_cross_attention_blackwhite(prompts, attention_maps.detach().cpu(), display_image=False,)
-                pil_imgs.save(f'{args.output_dir}/attn_maps/output_{global_step}_{step}.png')
 
-                loss += cos * 0.2
+                ### NOTE: save attention maps
+                if global_step % args.attn_map_steps == 0:
+                    pil_imgs, _ = show_cross_attention_blackwhite(prompts, attention_maps.detach().cpu(), display_image=False,)
+                    pil_imgs.save(f'{args.output_dir}/attn_maps/output_{global_step}_{step}.png')
+
+                ### NOTE: for ablation study
+                loss += cos * args.caa_lambda
+
                 indices = []
                 accelerator.backward(loss)
 
@@ -836,6 +867,7 @@ def main(args):
                         else custom_diffusion_layers.parameters()
                     )
                     accelerator.clip_grad_norm_(params_to_clip, args.max_grad_norm)
+
                 optimizer.step()
                 lr_scheduler.step()
                 optimizer.zero_grad(set_to_none=args.set_grads_to_none)
@@ -851,13 +883,18 @@ def main(args):
                         accelerator.save_state(save_path)
                         logger.info(f"Saved state to {save_path}")
 
-            logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
+            logs = {
+                    "loss": loss.detach().item(), 
+                    "lr": lr_scheduler.get_last_lr()[0]
+                    }
+            
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
             if global_step >= args.max_train_steps:
                 break
-
+        
+        ### NOTE: below is for accelerate usage
         if accelerator.is_main_process:
             if args.validation_prompt is not None and global_step % args.validation_steps == 0:
                 logger.info(
