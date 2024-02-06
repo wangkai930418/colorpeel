@@ -197,7 +197,33 @@ class E4TDataset_RGB(Dataset):
         )
 
 
+class ColorEmbed(ModelMixin, ConfigMixin):
+    def __init__(self, num_labels=4, embedding_dim=768, ):
+        super(ColorEmbed, self).__init__()
+        self.embedding_R = nn.Embedding(num_labels, embedding_dim)
+        self.embedding_G = nn.Embedding(num_labels, embedding_dim)
+        self.embedding_B = nn.Embedding(num_labels, embedding_dim)
 
+    def forward(self, labels):
+        return torch.cat((self.embedding_R(labels[0]).unsqueeze(0),\
+                          self.embedding_G(labels[1]).unsqueeze(0),\
+                            self.embedding_B(labels[2]).unsqueeze(0)),\
+                                dim=-1)
+    
+
+class ColorNet_Embed(ModelMixin, ConfigMixin):
+    def __init__(self, hidden_size=384):
+        super(ColorNet_Embed, self).__init__()
+        self.fc1 = nn.Linear(768*3, 768*2)  # First hidden layer
+        self.fc2 = nn.Linear(768*2, 768)  # First hidden layer
+        self.fc3 = nn.Linear(768, 768)  # Second hidden layer
+
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)  # No activation function in the output layer
+        return x
+    
 class ColorNet(ModelMixin, ConfigMixin):
     def __init__(self, hidden_size=384):
         super(ColorNet, self).__init__()

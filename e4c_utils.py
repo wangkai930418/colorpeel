@@ -425,6 +425,111 @@ class CustomDiffusionDataset_ColorList(Dataset):
         return example
 
 
+class CustomDiffusionDataset_FullColor(Dataset):
+    def __init__(
+        self,
+        tokenizer,
+        size=512,
+        mask_size=64,
+        aug=False,
+        shape_size=256,
+        # x_list=None,
+        # color_name_list=None,
+        # color_rgb_list=None
+    ):
+        self.shape_size=shape_size
+        self.size = size
+        self.mask_size = mask_size
+        # self.center_crop = center_crop
+        self.tokenizer = tokenizer
+        self.interpolation = Image.BILINEAR
+        self.aug = aug
+
+        self._length = 4
+
+        # self.color_embed_list=x_list
+        # self.color_name_list=color_name_list
+        # self.color_rgb_list=color_rgb_list
+
+    def __len__(self):
+        return self._length
+
+    def preprocess(self, image, scale, resample):
+        outer, inner = self.size, scale
+        factor = self.size // self.mask_size
+        if scale > self.size:
+            outer, inner = scale, self.size
+        top, left = np.random.randint(0, outer - inner + 1), np.random.randint(0, outer - inner + 1)
+        image = image.resize((scale, scale), resample=resample)
+        image = np.array(image).astype(np.uint8)
+        image = (image / 127.5 - 1.0).astype(np.float32)
+        instance_image = np.zeros((self.size, self.size, 3), dtype=np.float32)
+        mask = np.zeros((self.size // factor, self.size // factor))
+        if scale > self.size:
+            instance_image = image[top : top + inner, left : left + inner, :]
+            mask = np.ones((self.size // factor, self.size // factor))
+        else:
+            instance_image[top : top + inner, left : left + inner, :] = image
+            mask[
+                top // factor + 1 : (top + scale) // factor - 1, left // factor + 1 : (left + scale) // factor - 1
+            ] = 1.0
+
+        return instance_image, mask
+
+    def __getitem__(self, index):
+        example = {}
+        ### NOTE: should be automatical generation
+        # color_range_id = torch.randint(0, 4, (1,))
+        # start_color_embed, end_color_embed = self.color_embed_list[color_range_id], self.color_embed_list[color_range_id+1]
+
+        # start_color, end_color = self.color_rgb_list[color_range_id], self.color_rgb_list[color_range_id+1]
+        # start_color = torch.tensor(self.color_rgb_list[color_range_id], dtype=torch.float32)
+        # end_color = torch.tensor(self.color_rgb_list[color_range_id+1], dtype=torch.float32)
+
+        # color_lambda = torch.rand(1)
+        # color_fill = (start_color * (1-color_lambda) + end_color * color_lambda).to(torch.int)
+        # color_fill_embed = (start_color_embed * (1-color_lambda) + end_color_embed * color_lambda)
+
+        shape_label = torch.randint(0, 3, (1,))
+        ### NOTE: hexagon is a bit hard to learn so
+        
+        shape = shape_id_dict_reverse[shape_label.item()]
+        shape_token=shape_token_dict[shape]
+        
+        # color_fill = random.sample(list(range(256)), 3)
+        color_fill_ = random.sample(list(range(4)), 3)
+        color_fill = [item*32 for item in color_fill_]
+        color_fill_tuple = tuple(color_fill)
+
+        instance_image = create_image_with_shapes(circle_diameter=self.shape_size, \
+                                          fill_color=color_fill_tuple, shape=shape)
+        if not instance_image.mode == "RGB":
+            instance_image = instance_image.convert("RGB")
+
+        # apply resize augmentation and create a valid image region mask
+        random_scale = self.size
+        instance_image, mask = self.preprocess(instance_image, random_scale, self.interpolation)
+
+        example["instance_images"] = torch.from_numpy(instance_image).permute(2, 0, 1)
+        example["mask"] = torch.from_numpy(mask)
+        
+        template_ = random.choices(color_templates, k=1)[0]
+        instance_prompt_idx = template_.format(color_token="<c*>", shape_token=shape_token)
+        
+        example["color_fill_embed"] = torch.tensor(color_fill_)
+        
+        example["instance_prompt_ids"] = self.tokenizer(
+            # random.choice(instance_prompt),
+            instance_prompt_idx,
+            truncation=True,
+            padding="max_length",
+            max_length=self.tokenizer.model_max_length,
+            return_tensors="pt",
+        ).input_ids
+
+        return example
+
+
 
 def save_new_embed(text_encoder, modifier_token_id, accelerator, args, output_dir):
     """Saves the new token embeddings from the text encoder."""

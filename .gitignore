@@ -10,3 +10,5 @@ output
 rename_files.py
 
 make_video.py
+
+*.ipynb
