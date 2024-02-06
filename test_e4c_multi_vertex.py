@@ -84,7 +84,7 @@ def main():
 			color_x0 = token_embeds[start_init_id+range_id]
 			color_x1 = token_embeds[start_init_id+range_id+1]
 		
-			for color_lambda in torch.arange(0.0, 1.00, 0.01):
+			for color_lambda in torch.arange(0.0, 1.00, 0.05):
 				pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
 				post_color_embed=color_encoder(pre_color_embed)
 				token_embeds[color_token_id]=post_color_embed
