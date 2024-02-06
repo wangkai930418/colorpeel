@@ -22,17 +22,6 @@ def main():
 	
 	prompts = [
 		"a photo of {object_placeholder} in <c*> color",
-		# "a photo of <s2*> shape in <c*> color",
-		# "a photo of <s3*> shape in <c*> color",
-		# "a photo of <s4*> shape in <c*> color",
-		# "a photo of <s1*> shape in <c1*> color",
-		# "a photo of <s1*> shape in <c2*> color",
-		# "a photo of <s1*> shape in <c3*> color",
-		# "a photo of <s1*> shape in <c4*> color",
-		# "a photo of <s2*> shape in <c1*> color",
-		# "a photo of <s2*> shape in <c2*> color",
-		# "a photo of <s2*> shape in <c3*> color",
-		# "a photo of <s2*> shape in <c4*> color",
 		]
 
 	model_path = f'models/{args.exp}/'
@@ -69,8 +58,7 @@ def main():
 	tokenizer = pipe.tokenizer
 
 	token_embeds = text_encoder.get_input_embeddings().weight.data
-	color_x0 = token_embeds[49400]
-	color_x1 = token_embeds[49401]
+
 	color_encoder = ColorNet(hidden_size=1568)
 	color_enc_path=f"{model_path}/color_encoder.pth"
 	color_encoder.load_state_dict(torch.load(color_enc_path))
@@ -87,34 +75,23 @@ def main():
 	for prompt_ in prompts:
 		prompt = prompt_.format(object_placeholder=args.object)
 		# n_samples = args.samples
-		path = f'{out_path}/{LOG_DIR}/{prompt}_{datetime.now()}'
+		# path = f'{out_path}/{LOG_DIR}/{prompt}_{datetime.now()}'
+		path = f'{out_path}/{LOG_DIR}/{args.object}_{datetime.now()}'
 		os.mkdir(path)
-        
-		# prompt_ids = tokenizer(
-        #     prompt,
-        #     truncation=True,
-        #     padding="max_length",
-        #     max_length=tokenizer.model_max_length,
-        #     return_tensors="pt",
-        # ).input_ids
-        
-		# inputs_embeds = text_encoder.get_input_embeddings()(prompt_ids.to("cuda"))
-		# for ind in range(n_samples):
-		# for color_lambda in torch.arange(0, 1.1, 0.1):
-		# for color_lambda in torch.arange(0.51, 0.61, 0.01):
-
-		# for color_lambda in torch.arange(0.51, 0.52, 0.001):
-		for color_lambda in torch.arange(0.0, 1.00, 0.01):
-			pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
-			post_color_embed=color_encoder(pre_color_embed)
-			token_embeds[color_token_id]=post_color_embed
-			
-			gen = torch.Generator(device="cuda").manual_seed(args.seeds)
-
-			out = pipe(prompt, num_inference_steps=args.inf_steps, generator=gen, guidance_scale=args.scale,eta=1.0,)
-
-			out.images[0].save(f"{path}/{prompt}_{int(color_lambda*1000):04}.png")
-			# out.images[0].save(f"{path}/{prompt}_{int(color_lambda*100)}.png")
+		start_init_id = 49300
+		# range_id=0
+		for range_id in range(4):
+			color_x0 = token_embeds[start_init_id+range_id]
+			color_x1 = token_embeds[start_init_id+range_id+1]
+		
+			for color_lambda in torch.arange(0.0, 1.00, 0.01):
+				pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
+				post_color_embed=color_encoder(pre_color_embed)
+				token_embeds[color_token_id]=post_color_embed
+				gen = torch.Generator(device="cuda").manual_seed(args.seeds)
+				out = pipe(prompt, num_inference_steps=args.inf_steps, generator=gen, guidance_scale=args.scale,eta=1.0,)
+				# out.images[0].save(f"{path}/{prompt}_{int(color_lambda*1000):04}.png")
+				out.images[0].save(f"{path}/{range_id}_{args.object}_{int(color_lambda*1000):04}.png")
 
 if __name__ == "__main__":
     main()
