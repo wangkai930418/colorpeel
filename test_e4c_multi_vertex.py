@@ -15,6 +15,7 @@ def main():
 	parser.add_argument("--inf_steps", type=int, default=100)
 	parser.add_argument("--seeds", type=int, default=42)
 	parser.add_argument("--scale", type=float, default=6.0)
+	parser.add_argument("--interval", type=float, default=0.05)
 	parser.add_argument("--samples", type=int, default=3)
 	parser.add_argument('--object', type=str, default='chair')
 
@@ -84,7 +85,7 @@ def main():
 			color_x0 = token_embeds[start_init_id+range_id]
 			color_x1 = token_embeds[start_init_id+range_id+1]
 		
-			for color_lambda in torch.arange(0.0, 1.00, 0.05):
+			for color_lambda in torch.arange(0.0, 1.00, args.interval):
 				pre_color_embed = (color_x0 * (1-color_lambda) + color_x1 * color_lambda)
 				post_color_embed=color_encoder(pre_color_embed)
 				token_embeds[color_token_id]=post_color_embed
