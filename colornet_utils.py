@@ -281,6 +281,46 @@ def create_image_with_shapes(circle_diameter = 256, fill_color = (150, 0, 0), sh
 
 ### NOTE: this can be improved 
 
+def optim_init_colornet_list(color_encoder, x_list, y_list, step=100):
+    optim=torch.optim.Adam(color_encoder.parameters())
+    color_encoder, x_list, y_list = color_encoder.cuda(), x_list.cuda(), y_list.cuda()
+
+    data_list=[]
+    for list_ind in range(x_list.shape[0]-1):
+        x0=x_list[list_ind]
+        x1=x_list[list_ind+1]
+        y0=y_list[list_ind]
+        y1=y_list[list_ind+1]
+
+        for ind in range(100):
+            inter_lam = float(ind)/100.0
+            x_ = x0*(1-inter_lam)+(x1)*inter_lam
+            y_ = y0*(1-inter_lam)+(y1)*inter_lam
+            data_list.append((x_,y_))
+
+    custom_dataset=SimpleDataset(data_list)
+    batch_size = 16  # You can adjust this based on your needs
+    shuffle = True   # Set to True if you want to shuffle the data
+    data_loader = DataLoader(custom_dataset, batch_size=batch_size, shuffle=shuffle)
+
+    for epoch_id in range(step):
+        loss_sum=0.0
+        for batch_x, batch_y in data_loader:
+            # Your training code here
+            y_pred = color_encoder(batch_x)
+            loss = ((y_pred - batch_y)**2).sum()
+
+            loss_sum+=loss.item()
+            
+            loss.backward()
+            optim.step()
+            optim.zero_grad()
+        if epoch_id % 50 ==0:
+            print(loss_sum)
+
+    return color_encoder  
+
+
 def optim_init_colornet(color_encoder, x0, x1, y0,y1, step=100):
     optim=torch.optim.Adam(color_encoder.parameters())
     color_encoder, x0, x1, y0, y1 = color_encoder.cuda(), x0.cuda(), x1.cuda(), y0.cuda(), y1.cuda() 
