@@ -196,7 +196,9 @@ def parse_args(input_args=None):
     parser.add_argument("--num_train_epochs", 
                         type=int, 
                         default=1)
-
+    parser.add_argument("--num_color_channel", 
+                        type=int, 
+                        default=8)
     parser.add_argument(
         "--max_train_steps",
         type=int,
@@ -532,26 +534,9 @@ def main(args):
         )
         freeze_params(params_to_freeze)
 
-        ### TODO: for color encoder. hard coding for now
-        # color_name_list = args.color_name_list.split("+")
-        # start_init_id = 49300
-        # color_initial_id_list=[]
-        # color_x_list=[]
-        # color_y_list=[]
-        # color_rgb_list=[]
-
-        # for ind in range(len(color_name_list)):
-        #     color_initial_id_list.append(tokenizer(color_name_list[ind], add_special_tokens=False,return_tensors="pt").input_ids)
-        #     color_x_list.append(token_embeds[start_init_id+ind].reshape(1,-1))
-        #     color_y_list.append(token_embeds[color_initial_id_list[ind]].reshape(1,-1))
-        #     color_rgb_list.append(colorname_rgb_dict[color_name_list[ind]])
-
-        # color_x_list = torch.cat(color_x_list, dim=0)
-        # color_y_list = torch.cat(color_y_list, dim=0)
-
-        color_embedder=ColorEmbed(num_labels=4)
+        ### NOTE:
+        color_embedder=ColorEmbed(num_labels=args.num_color_channel)
         color_encoder = ColorNet_Embed()
-        # color_encoder = optim_init_colornet_list(color_encoder, color_x_list, color_y_list,step=args.pre_step)
         color_token_id = tokenizer.convert_tokens_to_ids("<c*>")
 
     ########################################################
@@ -659,6 +644,7 @@ def main(args):
         )
         .latent_dist.sample()
         .size()[-1],
+        num_labels=args.num_color_channel,
         )
 
     train_dataloader = torch.utils.data.DataLoader(
