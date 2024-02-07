@@ -11,7 +11,7 @@ import argparse
 def main():
 	parser = argparse.ArgumentParser()
 
-	parser.add_argument("--exp", type=str, default='colorpeel_e4c_10000steps_fullcolor')
+	parser.add_argument("--exp", type=str, default='colorpeel_e4c_10000steps_fullcolor_888')
 	parser.add_argument("--inf_steps", type=int, default=25)
 	parser.add_argument("--seeds", type=int, default=42)
 	parser.add_argument("--scale", type=float, default=6.0)
@@ -60,7 +60,7 @@ def main():
 
 	token_embeds = text_encoder.get_input_embeddings().weight.data
 
-	color_embedder=ColorEmbed(num_labels=4)
+	color_embedder=ColorEmbed(num_labels=8)
 	color_encoder = ColorNet_Embed()
 	color_enc_path=f"{model_path}/color_encoder.pth"
 	color_encoder.load_state_dict(torch.load(color_enc_path))
@@ -77,9 +77,9 @@ def main():
 		prompt = prompt_.format(object_placeholder=args.object)
 		path = f'{out_path}/{LOG_DIR}/{args.object}_{datetime.now()}'
 		os.mkdir(path)
-		for red in range(4):
-			for green in range(4):
-				for blue in range(4):
+		for red in range(8):
+			for green in range(8):
+				for blue in range(8):
 					color_fill_embed= torch.tensor([red,green,blue], dtype=torch.long).cuda()
 					color_embed_pre = color_embedder(color_fill_embed)
 					post_color_embed = color_encoder(color_embed_pre)
