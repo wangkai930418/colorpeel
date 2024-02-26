@@ -550,6 +550,7 @@ def main(args):
 
         color_x_list = torch.cat(color_x_list, dim=0)
         color_y_list = torch.cat(color_y_list, dim=0)
+        # import pdb;pdb.set_trace()
 
         color_encoder = ColorNet(hidden_size=1568)
         color_encoder = optim_init_colornet_list(color_encoder, color_x_list, color_y_list,step=args.pre_step)

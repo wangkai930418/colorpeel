@@ -376,7 +376,7 @@ class CustomDiffusionDataset_ColorList(Dataset):
     def __getitem__(self, index):
         example = {}
         ### NOTE: should be automatical generation
-        color_range_id = torch.randint(0, len(self.color_embed_list), (1,))
+        color_range_id = torch.randint(0, len(self.color_embed_list)-1, (1,))
         start_color_embed, end_color_embed = self.color_embed_list[color_range_id], self.color_embed_list[color_range_id+1]
 
         # start_color, end_color = self.color_rgb_list[color_range_id], self.color_rgb_list[color_range_id+1]
