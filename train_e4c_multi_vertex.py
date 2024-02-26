@@ -54,9 +54,10 @@ import wandb
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 # check_min_version("0.17.0.dev0")
 from e4c_utils import *
-        # self.color_order=['maroon', 'olive', 'gray', 'teal', 'navy']
+# self.color_order=['maroon', 'olive', 'gray', 'teal', 'navy']
 
-colorname_rgb_dict = {'maroon':[128,0,0], 'olive':[128,128,0], 'gray':[128,128,128], 'teal':[0,128,128], 'navy': [0,0,128]}
+colorname_rgb_dict = {'sienna':[160,80,40],'brown':[160,40,40], 'maroon':[128,0,0], 'olive':[128,128,0], \
+                      'gray':[128,128,128], 'teal':[0,128,128], 'navy': [0,0,128], 'indigo':[75,0,128]}
 
 def parse_args(input_args=None):
     parser = argparse.ArgumentParser(description="Custom Diffusion training script.")
