@@ -1,0 +1,51 @@
+[
+    {
+        "instance_prompt":     "a photo of <s1*> shape in <c1*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/blue_cone",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },
+    {
+        "instance_prompt":     "a photo of <s2*> shape in <c1*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/blue_cube",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },
+    {
+        "instance_prompt":     "a photo of <s3*> shape in <c2*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/green_cylinder",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },
+    {
+        "instance_prompt":     "a photo of <s4*> shape in <c2*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/green_sphere",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },
+    {
+        "instance_prompt":     "a photo of <s1*> shape in <c3*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/red_cone",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },
+    {
+        "instance_prompt":     "a photo of <s2*> shape in <c3*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/red_cube",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },    
+    {
+        "instance_prompt":     "a photo of <s3*> shape in <c4*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/yellow_cylinder",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    },
+    {
+        "instance_prompt":     "a photo of <s4*> shape in <c4*> color",
+        "class_prompt":         "3D shape",
+        "instance_data_dir":    "./data/extended_set/yellow_sphere",
+        "class_data_dir":       "./real_reg/3D_shapes"
+    }
+]
+

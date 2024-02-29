@@ -1,0 +1,58 @@
+[
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c1*>",
+                                "a photo of <s1*> shape in <c1*> color",
+                                "a photo of <s1*> filled with <c1*>",
+                                "a photo of <s1*> <c1*>"],
+        "instance_data_dir":    "data/4s4c_set/blue_cone/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c1*>",
+                                "a photo of <s2*> filled with <c1*>",
+                                "a photo of <s2*> shape in <c1*> color",
+                                "a photo of <s2*> <c1*>"],
+        "instance_data_dir":    "data/4s4c_set/blue_cube/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c2*>",
+                                "a photo of <s3*> filled with <c2*>",
+                                "a photo of <s3*> shape in <c2*> color",
+                                "a photo of <s3*> <c2*>"],
+        "instance_data_dir":    "data/4s4c_set/green_cylinder/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c2*>",
+                                "a photo of <s4*> filled with <c2*>",
+                                "a photo of <s4*> shape in <c2*> color",
+                                "a photo of <s4*> <c2*>"],
+        "instance_data_dir":    "data/4s4c_set/green_sphere/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c3*>",
+                                "a photo of <s1*> filled with <c3*>",
+                                "a photo of <s1*> shape in <c3*> color",
+                                "a photo of <s1*> <c3*>"],
+        "instance_data_dir":    "data/4s4c_set/red_cone/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c3*>",
+                                "a photo of <s2*> filled with <c3*>",
+                                "a photo of <s2*> shape in <c3*> color",
+                                "a photo of <s2*> <c3*>"],
+        "instance_data_dir":    "data/4s4c_set/red_cube/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c4*>",
+                                "a photo of <s3*> filled with <c4*>",
+                                "a photo of <s3*> shape in <c4*> color",
+                                "a photo of <s3*> <c4*>"],
+        "instance_data_dir":    "data/4s4c_set/yellow_cylinder/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c4*>",
+                                "a photo of <s4*> filled with <c4*>",
+                                "a photo of <s4*> shape in <c4*> color",
+                                "a photo of <s4*> <c4*>"],
+        "instance_data_dir":    "data/4s4c_set/yellow_sphere/"
+    }
+]

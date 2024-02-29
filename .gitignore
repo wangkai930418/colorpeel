@@ -1,14 +1,14 @@
 .vscode
-concept_json
+# concept_json
 data
 models
-*.sh
+# *.sh
 *__pycache__
 
 output
 
-rename_files.py
+# rename_files.py
 
-make_video.py
+# make_video.py
 
-*.ipynb
+# *.ipynb

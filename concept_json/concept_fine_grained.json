@@ -1,0 +1,240 @@
+[
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c1*>",
+                                "a photo of <s1*> shape in <c1*> color",
+                                "a photo of <s1*> filled with <c1*>",
+                                "a photo of <s1*> <c1*>"],
+        "instance_data_dir":    "data/fine_grained_set/cone/beige/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c1*>",
+                                "a photo of <s2*> filled with <c1*>",
+                                "a photo of <s2*> shape in <c1*> color",
+                                "a photo of <s2*> <c1*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/beige/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c2*>",
+                                "a photo of <s3*> filled with <c2*>",
+                                "a photo of <s3*> shape in <c2*> color",
+                                "a photo of <s3*> <c2*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/bisque/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c2*>",
+                                "a photo of <s4*> filled with <c2*>",
+                                "a photo of <s4*> shape in <c2*> color",
+                                "a photo of <s4*> <c2*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/bisque/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c3*>",
+                                "a photo of <s5*> filled with <c3*>",
+                                "a photo of <s5*> shape in <c3*> color",
+                                "a photo of <s5*> <c3*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/blue/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c3*>",
+                                "a photo of <s2*> filled with <c3*>",
+                                "a photo of <s2*> shape in <c3*> color",
+                                "a photo of <s2*> <c3*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/blue/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c4*>",
+                                "a photo of <s1*> filled with <c4*>",
+                                "a photo of <s1*> shape in <c4*> color",
+                                "a photo of <s1*> <c4*>"],
+        "instance_data_dir":    "data/fine_grained_set/cone/coral/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c4*>",
+                                "a photo of <s3*> filled with <c4*>",
+                                "a photo of <s3*> shape in <c4*> color",
+                                "a photo of <s3*> <c4*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/coral/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c5*>",
+                                "a photo of <s4*> filled with <c5*>",
+                                "a photo of <s4*> shape in <c5*> color",
+                                "a photo of <s4*> <c5*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/cyan/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c5*>",
+                                "a photo of <s5*> filled with <c5*>",
+                                "a photo of <s5*> shape in <c5*> color",
+                                "a photo of <s5*> <c5*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/cyan/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c6*>",
+                                "a photo of <s1*> filled with <c6*>",
+                                "a photo of <s1*> shape in <c6*> color",
+                                "a photo of <s1*> <c6*>"],
+        "instance_data_dir":    "data/fine_grained_set/cone/gold/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c6*>",
+                                "a photo of <s2*> filled with <c6*>",
+                                "a photo of <s2*> shape in <c6*> color",
+                                "a photo of <s2*> <c6*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/gold/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c7*>",
+                                "a photo of <s3*> filled with <c7*>",
+                                "a photo of <s3*> shape in <c7*> color",
+                                "a photo of <s3*> <c7*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/green/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c7*>",
+                                "a photo of <s4*> filled with <c7*>",
+                                "a photo of <s4*> shape in <c7*> color",
+                                "a photo of <s4*> <c7*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/green/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c8*>",
+                                "a photo of <s2*> filled with <c8*>",
+                                "a photo of <s2*> shape in <c8*> color",
+                                "a photo of <s2*> <c8*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/indigo/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c8*>",
+                                "a photo of <s5*> filled with <c8*>",
+                                "a photo of <s5*> shape in <c8*> color",
+                                "a photo of <s5*> <c8*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/indigo/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c9*>",
+                                "a photo of <s1*> filled with <c9*>",
+                                "a photo of <s1*> shape in <c9*> color",
+                                "a photo of <s1*> <c9*>"],
+        "instance_data_dir":    "data/fine_grained_set/cone/lime/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c9*>",
+                                "a photo of <s3*> filled with <c9*>",
+                                "a photo of <s3*> shape in <c9*> color",
+                                "a photo of <s3*> <c9*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/lime/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c10*>",
+                                "a photo of <s4*> filled with <c10*>",
+                                "a photo of <s4*> shape in <c10*> color",
+                                "a photo of <s4*> <c10*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/maroon/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c10*>",
+                                "a photo of <s5*> filled with <c10*>",
+                                "a photo of <s5*> shape in <c10*> color",
+                                "a photo of <s5*> <c10*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/maroon/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c11*>",
+                                "a photo of <s1*> filled with <c11*>",
+                                "a photo of <s1*> shape in <c11*> color",
+                                "a photo of <s1*> <c11*>"],
+        "instance_data_dir":    "data/fine_grained_set/cone/navy/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c11*>",
+                                "a photo of <s2*> filled with <c11*>",
+                                "a photo of <s2*> shape in <c11*> color",
+                                "a photo of <s2*> <c11*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/navy/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c12*>",
+                                "a photo of <s3*> filled with <c12*>",
+                                "a photo of <s3*> shape in <c12*> color",
+                                "a photo of <s3*> <c12*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/olive/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c12*>",
+                                "a photo of <s4*> filled with <c12*>",
+                                "a photo of <s4*> shape in <c12*> color",
+                                "a photo of <s4*> <c12*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/olive/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c13*>",
+                                "a photo of <s2*> filled with <c13*>",
+                                "a photo of <s2*> shape in <c13*> color",
+                                "a photo of <s2*> <c13*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/pink/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c13*>",
+                                "a photo of <s5*> filled with <c13*>",
+                                "a photo of <s5*> shape in <c13*> color",
+                                "a photo of <s5*> <c13*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/pink/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s1*> in <c14*>",
+                                "a photo of <s1*> filled with <c14*>",
+                                "a photo of <s1*> shape in <c14*> color",
+                                "a photo of <s1*> <c14*>"],
+        "instance_data_dir":    "data/fine_grained_set/cone/purple/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c14*>",
+                                "a photo of <s3*> filled with <c14*>",
+                                "a photo of <s3*> shape in <c14*> color",
+                                "a photo of <s3*> <c14*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/purple/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c15*>",
+                                "a photo of <s4*> filled with <c15*>",
+                                "a photo of <s4*> shape in <c15*> color",
+                                "a photo of <s4*> <c15*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/red/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c15*>",
+                                "a photo of <s5*> filled with <c15*>",
+                                "a photo of <s5*> shape in <c15*> color",
+                                "a photo of <s5*> <c15*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/red/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s3*> in <c17*>",
+                                "a photo of <s3*> filled with <c17*>",
+                                "a photo of <s3*> shape in <c17*> color",
+                                "a photo of <s3*> <c17*>"],
+        "instance_data_dir":    "data/fine_grained_set/cylinder/wheat/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s4*> in <c17*>",
+                                "a photo of <s4*> filled with <c17*>",
+                                "a photo of <s4*> shape in <c17*> color",
+                                "a photo of <s4*> <c17*>"],
+        "instance_data_dir":    "data/fine_grained_set/hexagon/wheat/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s2*> in <c18*>",
+                                "a photo of <s2*> filled with <c18*>",
+                                "a photo of <s2*> shape in <c18*> color",
+                                "a photo of <s2*> <c18*>"],
+        "instance_data_dir":    "data/fine_grained_set/cube/yellow/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s5*> in <c18*>",
+                                "a photo of <s5*> filled with <c18*>",
+                                "a photo of <s5*> shape in <c18*> color",
+                                "a photo of <s5*> <c18*>"],
+        "instance_data_dir":    "data/fine_grained_set/sphere/yellow/"
+    }
+]

@@ -1,0 +1,112 @@
+		# 'a photo of travel mug on the table',
+		# 'a photo of travel mug on the floor',
+		# 'a photo of travel mug in the lawn',
+		# 'a photo of travel mug on the shop',
+		# 'a photo of travel mug in the shopping mall',
+		# 'a photo of travel mug on a resturant',
+		# 'a photo of travel mug in the cafeteria',
+		# 'a photo of travel mug in the bedroom',
+		# 'a photo of travel mug in the garden',
+		# 'a photo of travel mug on a train station'
+		# 'a dark night view'
+		# 'a photo of <av_q*> teadybear on a sunny day forest view in background',
+		# 'a photo of <av_q*> teadybear in snowy night',
+		# 'a photo of <av_q*> teadybear on beach on a sunny day',
+		# 'a photo of <av_q*> teadybear in forest on a sunny day',
+		# 'a photo of <av_q*> teadybear in snow on a sunny day',
+		# 'a photo of <av_q*> teadybear in a dark rainy night',
+		# 'a photo of <av_q*> teadybear in a dark ocean underwater view',
+		# 'a photo of <av_q*> teadybear in a coral reef',
+		# 'a photo of <av_q*> teadybear sitting in a dark alley',
+		# 'a photo of <av_q*> teadybear in a forest with a dark night background',
+		# 'a photo of <av_q*> teadybear in a dark underwater view',
+		# 'a photo of <av_q*> teadybear in a dark night forest view',
+		# 'a photo of a <q*> teadybear',
+		'a photo of a <v*> teddybear in dark night',
+		'a photo of <v*> teddybear in a dark night forest view',
+		'a photo of a <v*> teddybear under dark water',
+		'a photo of a <v*> teddybear in dark snowy night',
+		'a photo of <v*> teddybear in a dark alley',
+		# 'a photo of a <q*><nv*> teadybear in snowy night',
+		# 'a photo of a <q*><mv*> teadybear in snow on sunny day',
+		# 'a photo of a <q*><nv*> teadybear in snow on sunny day',
+		# 'a photo of a <q*><nv*> teadybear on a wooden table in resturant',
+		# 'Still life of a <q*><nv*> teadybear with strong shadow',
+		# 'Still life of a <q*><mv*> teadybear with strong shadow',
+		# 'a photo of <q*><mv*> teadybear on book Apex Legends style',
+		# 'a photo of <q*><nv*> teadybear on book Apex Legends style',
+		# 'a photo of a <q*><nv*> teadybear on the table in TV launge',
+		# 'a photo of a <q*><mv*> teadybear on the table in TV launge',		
+		# 'a photo of <q*><nv*> teadybear with the Eiffel Tower in the background',
+		# 'a photo of <q*><nv*> teadybear in the snow',
+		# 'a photo of <av_q*> teadybear in a coral reef',
+		# 'a photo of <q*><nv*> teadybear sitting in a water puddle inside a dark cave',
+		# 'a photo of <q*><nv*> teadybear in a snowy dark night',
+		# 'a photo of <q*><nv*> teadybear in the street',
+		# 'a photo of <av_q*> teadybear eating a burger',
+		# 'a photo of <av_q*> teadybear looking down with its mouth closed',
+		# 'a photo of <q*><nv*> teadybear in the desert',
+		# 'a photo of <q*><mv*> teadybear in the desert',
+		# 'a photo of <av_q*> teadybear on the grass',
+		# 'a photo of <q*><mv*> teadybear in the snow',
+		# 'a photo of <q*><mv*> teadybear in the forest trees in background',
+		# 'a photo of <av_q*> teadybear standing on top of water',
+		# 'a painting of <av_q*> teadybear in the style of The Starry Night',
+		# 'a photo of <av_q*> teadybear sitting on a rock in the Grand Canyon',
+		# 'a photo of <av_q*> teadybear next to a river',
+		# 'a photo of <av_q*> teadybear and a Corgi in the forest',
+		# 'a photo of <av_q*> teadybear at the beach',
+		# 'A photo of <av_q*> teadybear',
+		# 'A photo of <av_q*> teadybear a car',
+
+############    break a scene      ###########
+a photo of {token} with the Eiffel Tower in the background
+a photo of {token} and {token} in the snow
+a photo of {token} in a coral reef
+a photo of {token} sitting in a water puddle inside a dark cave
+a photo of {token} in a snowy dark night
+a photo of {token} running in the street
+a photo of {token} eating a burger
+a photo of {token} looking down with its mouth closed
+a photo of {token} in the desert
+a photo of {token} and {token} on the grass
+a photo of {token} and {token} and {token} in the the forest
+a photo of {token} standing on top of water
+a painting of {token} and {token} in the style of The Starry Night
+a photo of {token} sitting on a rock in the Grand Canyon
+a photo of {token} and {token} and {token} next to a river
+a photo of {token} and a Corgi on {token} in the forest
+a photo of {token} and {token} and {token} and {token} at the beach
+A photo of {token} and {token} and {token}
+A photo a car at {token}
+A photo of {token} and its child at the beach 
+A photo of {token} sitting on an avocado
+A photo of {token} sitting on in the desert
+A photo of {token} on the road
+A photo of {token} at Times Square
+A photo of {token} in the snow
+a photo of {tokens} at the beach
+a photo of {tokens} in the jungle
+a photo of {tokens} in the snow
+a photo of {tokens} in the street
+a photo of {tokens} on top of a pink fabric
+a photo of {tokens} on top of a wooden floor
+a photo of {tokens} with a city in the background
+a photo of {tokens} with a mountain in the background
+a photo of {tokens} with the Eiffel tower in the background
+a photo of {tokens} floating on top of water
+
+
+##########     Custom Diffusion    ############
+
+A watercolor painting of V* tortoise plushy on a mountain
+V* teddybear in Times Square
+V* table and an orange sofa
+A V* flower with violet color petals
+V1 * chair with the V2 * cat sitting on it near a beach
+The V1 * cat is sitting inside a V2 * wooden pot and looking up
+V1 * flower in the V2 * wooden pot on a table
+Photo of a V1 * table and a V2 * chair in the garden
+A V* backpack in the grand canyon
+A V* backpack with the night sky
+A wet V* backpack in the water

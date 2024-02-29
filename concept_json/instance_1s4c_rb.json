@@ -1,0 +1,8 @@
+[
+  {
+    "instance_prompt": [
+      "a photo of <s1*> shape in <c3*> color"
+    ],
+    "instance_data_dir": "data/dataset/rectangle_blue"
+  }
+]

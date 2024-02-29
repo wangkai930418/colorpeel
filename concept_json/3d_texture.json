@@ -1,0 +1,50 @@
+[
+  {
+    "instance_prompt": [
+      "a photo of <s1*> shape in <t1*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/cube_brick"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s1*> shape in <t2*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/cube_terazo"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s1*> shape in <t3*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/cube_rusted"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s1*> shape in <t4*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/cube_stonewall"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s2*> shape in <t1*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/sphere_brick"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s2*> shape in <t2*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/sphere_terazo"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s2*> shape in <t3*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/sphere_rusted"
+  },
+  {
+    "instance_prompt": [
+      "a photo of <s2*> shape in <t4*> texture"
+    ],
+    "instance_data_dir": "data/3d_texture/sphere_stonewall"
+  }
+]

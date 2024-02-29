@@ -1,0 +1,34 @@
+[
+    {
+        "instance_prompt":     ["a photo of <p*> in <cb*>"],
+        "instance_data_dir":    "data/extended_set/blue_cone/"
+    },
+    {
+        "instance_prompt":     ["a photo of <q*> in <cb*>"],
+        "instance_data_dir":    "data/extended_set/blue_cube/"
+    },
+    {
+        "instance_prompt":     ["a photo of <r*> in <cg*>"],
+        "instance_data_dir":    "data/extended_set/green_cylinder/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s*> in <cg*>"],
+        "instance_data_dir":    "data/extended_set/green_sphere/"
+    },
+    {
+        "instance_prompt":     ["a photo of <p*> in <cr*>"],
+        "instance_data_dir":    "data/extended_set/red_cone/"
+    },
+    {
+        "instance_prompt":     ["a photo of <q*> in <cr*>"],
+        "instance_data_dir":    "data/extended_set/red_cube/"
+    },
+    {
+        "instance_prompt":     ["a photo of <r*> in <cy*>"],
+        "instance_data_dir":    "data/extended_set/yellow_cylinder/"
+    },
+    {
+        "instance_prompt":     ["a photo of <s*> in <cy*>"],
+        "instance_data_dir":    "data/extended_set/yellow_sphere/"
+    }
+]
